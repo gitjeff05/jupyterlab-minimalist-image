@@ -1,0 +1,5 @@
+#dev certs 
+cert/localhost/* 
+
+cert/node_modules/
+cert/localhost.*

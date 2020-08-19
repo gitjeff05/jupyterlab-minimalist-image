@@ -1,0 +1,17 @@
+{
+  "name": "certutils",
+  "version": "0.0.1",
+  "description": "Create a self-signed certificate authority (CA) and generate certificates",
+  "main": "index.js",
+  "repository": "",
+  "type": "module",
+  "author": "Jeff Laiosa",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "devcert": "^1.1.2"
+  },
+  "devDependencies": {
+    "devcert-cli": "^1.0.0"
+  }
+}
