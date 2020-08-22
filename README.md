@@ -87,9 +87,9 @@ Simply modify the `requirements.txt` file and repeat the step in build.
 
 ## Use Certificates so you can use https
 
-There are some nice tools for using https locally should you want to. [Devcert](https://github.com/davewasmer/devcert) and [MakeCert](https://github.com/FiloSottile/mkcert) provide excellent tooling for not only generating certificates, but also for also signing them with a self-generated certificate authority. See the `./cert` directory as it has some direction to help you get setup with devcert.
+There are some nice tools for using https locally should the need arise. [Devcert](https://github.com/davewasmer/devcert) and [MakeCert](https://github.com/FiloSottile/mkcert) provide excellent tooling for not only generating certificates, but also for also signing them with a self-generated certificate authority. See the `./cert` directory as it has some direction to help you get setup with devcert.
 
-Once you have generated certs for localhost, it is as simple as mounting them and running:
+Once you have generated certs for localhost, it is as simple as mounting them and passing the location to the mounted certificates to jupyter lab:
 
 ```bash
 > docker run --rm -it -p 8888:8888 \
@@ -103,8 +103,9 @@ Once you have generated certs for localhost, it is as simple as mounting them an
 
 Note that you have to resend the `ip` and `port` because we are overriding the `CMD` statement with certificate info. There may be a better way to do this but for right now this is the way.
 
-Also, you may have to use `localhost` instead of the `127.0.0.1` if the domain on your generated certificate used `localhost` as the domain.
+Note, you may have to use `localhost` instead of the `127.0.0.1` if the domain on your generated certificate used `localhost` as the domain (devcert does not support creating certificate authorities with `127.0.0.1`).
 
 ## Feedback
 
 Any feedback is most welcome. Please feel free to open an issue or pull request if you would like to see any additional functionality or additional kernels added.
+

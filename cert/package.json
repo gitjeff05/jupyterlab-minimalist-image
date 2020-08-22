@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Create a self-signed certificate authority (CA) and generate certificates",
   "main": "index.js",
-  "repository": "",
+  "repository": "https://github.com/gitjeff05/jupyterlab-minimalist-image/cert",
   "type": "module",
   "author": "Jeff Laiosa",
   "license": "MIT",
