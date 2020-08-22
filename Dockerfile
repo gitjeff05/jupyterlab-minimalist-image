@@ -1,28 +1,26 @@
-FROM python:3.7.8-slim-buster AS base
+FROM python:3.8.5-slim-buster AS base
 
 ARG REQ=requirements.txt
 
-ARG NB_USER="alice"
+ARG NB_USER="jordan"
 ARG NB_UID="1000"
 ARG NB_GID="100"
 
-# Add a new user
+# Add a new user with useradd
 # -m           // --> create user's home directory
 # -s /bin/bash // --> set the shell of the user
 # -g ${NB_GID} // --> ID of the primary group of the new account
 # -u $NB_UID   // --> user ID of the new account
 # $NB_USER     // --> set user name
-# unsure if chown is necessary.
-RUN useradd -m -s /bin/bash -g ${NB_GID} -u $NB_UID $NB_USER \
-    && chown -R ${NB_USER}:${NB_GID} /home/alice
+RUN useradd -m -s /bin/bash -g ${NB_GID} -u $NB_UID $NB_USER
 
-WORKDIR /home/alice
+WORKDIR /home/${NB_USER}
 
-COPY ./${REQ} ./
-
-ENV PATH="/home/alice/.local/bin:$PATH"
+ENV PATH="/home/${NB_USER}/.local/bin:$PATH"
 
 USER ${NB_USER}
+
+COPY ./${REQ} ./
 
 RUN pip install --no-cache-dir -r ${REQ}
 
@@ -40,4 +38,4 @@ FROM base
 
 EXPOSE 8888
 ENTRYPOINT [ "jupyter", "lab" ]
-
+CMD ["--port=8888", "--no-browser", "--ip=0.0.0.0"]

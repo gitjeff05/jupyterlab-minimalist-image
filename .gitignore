@@ -1,5 +1,6 @@
-#dev certs 
-cert/localhost/* 
-
+# development certificates 
 cert/node_modules/
 cert/localhost.*
+
+# vscode settings
+.vscode/
