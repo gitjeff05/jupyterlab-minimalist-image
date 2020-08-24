@@ -1,18 +1,18 @@
 # Minimalist JupyterLab Docker Image
 
-A lightweight* Docker image for Python, [JupterLab](https://jupyterlab.readthedocs.io), [Numpy](https://numpy.org/), [Pandas](https://pandas.pydata.org/), [Matplotlib](https://matplotlib.org/) and [scikit-learn](https://scikit-learn.org/stable/).
+A [lightweight](https://github.com/gitjeff05/jupyterlab-minimalist-image#the-result) Docker image for Python, [JupterLab](https://jupyterlab.readthedocs.io), [Numpy](https://numpy.org/), [Pandas](https://pandas.pydata.org/), [Matplotlib](https://matplotlib.org/) and [scikit-learn](https://scikit-learn.org/stable/).
 
 ## The Goals of this Project:
 
-An efficient and minimal image, built from a small Dockerfile (~20 lines). It should be easy to extend. Specifically, this project should always aim to:
+A minimalist image, built from a small Dockerfile (~20 lines) that is easy to extend. Specifically, this project should always aim to:
 
 1. Use a Dockerfile that is simple and intuitive
 2. Produce an image that is small as possible by:
     - using [multi-stage builds](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#use-multi-stage-builds)
     - minimizing RUN, COPY, ADD commands
     - minimizing dependencies
-4. Be easy to extend with additional packages based on user preferences
-5. Follow best practices and [start with an appropriate base image](https://docs.docker.com/develop/dev-best-practices/#how-to-keep-your-images-small) (i.e., [Official Python Docker](https://hub.docker.com/_/python))
+3. Be easy to extend with additional packages based on user preferences
+4. Follow best practices and [start with an appropriate base image](https://docs.docker.com/develop/dev-best-practices/#how-to-keep-your-images-small) (i.e., [Official Python Docker](https://hub.docker.com/_/python))
 
 Disclaimer: **This is experimental.**  It is safe enough to use locally, but not yet meant for production until others have had a chance to review.
 
@@ -22,7 +22,11 @@ Setting up a local environment for data science is cumbersome. Between environme
 
 ## The Benefits of Containerization
 
-One way to isolate environments so that they are predictable, portable and stable is containerization. Images come preconfigured with packages and software installed and are quick to boot. The solutions discussed and implemented here will focus on containerization as opposed to environment managers like [Anaconda](https://www.anaconda.com/) or [Virtualenv](https://virtualenv.pypa.io/en/latest/#).
+A good way to create consistent, portable and isolated environments is containerization. Containers can be preconfigured with packages and software installed. They are efficient and can be shared easily.
+
+The solutions discussed and implemented here will focus on containerization as opposed to environment managers like [Anaconda](https://www.anaconda.com/) or [Virtualenv](https://virtualenv.pypa.io/en/latest/#).
+
+For a more in-depth rundown of containers, consider reading some good introductions by [NetApp](https://www.netapp.com/us/info/what-are-containers.aspx) and [Google](https://cloud.google.com/containers) and [Docker](https://www.docker.com/resources/what-container).
 
 ## Existing Solutions
 
