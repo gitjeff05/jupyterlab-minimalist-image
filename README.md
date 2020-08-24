@@ -38,7 +38,7 @@ However, the resulting images from Jupyter Docker Stacks can be quite large and 
         - `jupyter/minimal-notebook`
           - `jupyter/scipy-notebook`
 
-If you require Conda or JupyterHub, then Jupyter Docker Stacks is a good option for you. They also support R, Spark, TensorFlow, Julia and other kernels that this project does not.
+If you require Conda or JupyterHub, then Jupyter Docker Stacks is a good option for you. They also support R, Spark, TensorFlow, Julia and other kernels that this project does not. There are definitely cases where Jupyter Docker Stacks is a great option and I have many times used them myself.
 
 ## The Approach
 
@@ -46,9 +46,7 @@ We desired a solution based off the [Official Python Docker image](https://hub.d
 
 ## The Result
 
-The resulting image is built from a ~20 line Dockerfile and results in a 663MB image.
-
-## Comparison with jupyter/scipy-notebook:
+The resulting image is built from a ~20 line Dockerfile and results in a 663MB image. A comparison with jupyter/scipy-notebook is shown below.
 
 | Image  | # Layers | # lines in Dockerfile | Size (GB) | 
 |---|---|---|---|
@@ -57,13 +55,13 @@ The resulting image is built from a ~20 line Dockerfile and results in a 663MB i
 
 ---
 
-**Note**: This is not exactly a fair comparison because the scipy image from Jupyter Docker Stacks includes so much more (e.g., Conda, JupyterHub, Git, Emacs and more).
+**Note**: This is not *exactly* a fair comparison because the scipy image from Jupyter Docker Stacks includes so much more (e.g., Conda, JupyterHub, Git, Emacs and more).
 
-# How to Run
+# How to Build and Run this Container:
 
 ## Build
 
-Currently, this image is not published to a registry. As a result, you *cannot* use `docker pull` yet. To build the image just run the following from the root directory:
+Currently, this image is not published to a registry. As a result, you *cannot* use `docker pull` yet. To build the image just run the following from the root directory of this project:
 
 ```bash
 > export DOCKER_BUILDKIT=1
@@ -71,7 +69,7 @@ Currently, this image is not published to a registry. As a result, you *cannot* 
 ```
 Note: Setting `DOCKER_BUILDKIT` enables [BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/). Although not required, it is recommended because it improves performance, storage and security. 
 
-## Run the Container
+## Run
 
 Suppose you want to work from some directory `/Users/alex/ml-projects`. To run with that directory mounted to the container, run:
 
@@ -83,13 +81,11 @@ Suppose you want to work from some directory `/Users/alex/ml-projects`. To run w
 
 ## Include Additional Packages
 
-Simply modify the `requirements.txt` file and repeat the step in build.
+Want to use ggplot or plotly? Simply modify the `requirements.txt` file and repeat the step in build.
 
-## Use Certificates so you can use https
+## Generate Self-Signed Certificates for `https`
 
-There are some nice tools for using https locally should the need arise. [Devcert](https://github.com/davewasmer/devcert) and [MakeCert](https://github.com/FiloSottile/mkcert) provide excellent tooling for not only generating certificates, but also for also signing them with a self-generated certificate authority. See the `./cert` directory as it has some direction to help you get setup with devcert.
-
-Once you have generated certs for localhost, it is as simple as mounting them and passing the location to the mounted certificates to jupyter lab:
+Assuming you have a generated your certificate and private key file, you can pass these to `jupyter lab` with the following:
 
 ```bash
 > docker run --rm -it -p 8888:8888 \
@@ -105,7 +101,9 @@ Note that you have to resend the `ip` and `port` because we are overriding the `
 
 Note, you may have to use `localhost` instead of the `127.0.0.1` if the domain on your generated certificate used `localhost` as the domain (devcert does not support creating certificate authorities with `127.0.0.1`).
 
+See the [readme in the cert folder](https://github.com/gitjeff05/jupyterlab-minimalist-image/blob/master/cert/app.mjs) for more info on generating self-signed certificates for local development.
+
 ## Feedback
 
-Any feedback is most welcome. Please feel free to open an issue or pull request if you would like to see any additional functionality or additional kernels added.
+Any feedback is most welcome. Please feel free to [open an issue](https://github.com/gitjeff05/jupyterlab-minimalist-image/issues) or pull request if you would like to see any additional functionality or additional kernels added.
 
