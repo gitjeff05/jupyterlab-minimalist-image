@@ -94,9 +94,9 @@ Assuming you have a generated your certificate and private key file, you can pas
 ```bash
 > docker run --rm -it -p 8888:8888 \
   -v /Users/alex/ml-projects:/home/jordan/work \
-  -v /Users/alex/certs:/home/jordan/certs \ # mount certs
+  -v /Users/alex/certs:/home/jordan/certs \
   jupyterlab-minimalist:v1 \
-  --ip=0.0.0.0 --port=8888 \ # set ip and port
+  --ip=0.0.0.0 --port=8888 \
   --certfile=/home/jordan/certs/localhost.cert \
   --keyfile=/home/jordan/certs/localhost.key
 ```
