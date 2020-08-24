@@ -24,6 +24,8 @@ COPY ./${REQ} ./
 
 RUN pip install --no-cache-dir -r ${REQ}
 
+FROM base as appdeps
+
 USER root
 
 # In order to install JupyterLab extensions, we need to have Node.js installed.
@@ -34,7 +36,7 @@ RUN apt-get update; \
 
 USER ${NB_USER}
 
-FROM base
+FROM appdeps
 
 EXPOSE 8888
 ENTRYPOINT [ "jupyter", "lab" ]

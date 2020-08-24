@@ -54,12 +54,12 @@ The resulting image is built from a ~20 line Dockerfile and results in a 663MB i
 
 | Image  | # Layers | # lines in Dockerfile | Size (GB) | 
 |---|---|---|---|
-| `jupyterlab-minimalist`  | 10  | 21 | 0.663 |
+| `jupyterlab-minimalist`  | 10  | 22 | 0.663 |
 | `jupyter/scipy-notebook`  | 21  | 190 | 2.67 |
 
 ---
 
-**Note**: This is not *exactly* a fair comparison because the scipy image from Jupyter Docker Stacks includes so much more (e.g., Conda, JupyterHub, Git, Emacs and more).
+**Note**: This is not *exactly* a fair comparison because the scipy image from Jupyter Docker Stacks includes so much more (e.g., Conda, JupyterHub, Git, Emacs and more). Also the "# lines in Dockerfile" was calculated using all the dockerfiles in the chain with spaces and comments removed.
 
 # How to Build and Run this Container:
 
@@ -87,7 +87,7 @@ Suppose you want to work from some directory `/Users/alex/ml-projects`. To run w
 
 Want to use ggplot or plotly? Simply modify the `requirements.txt` file and repeat the step in build.
 
-## Generate Self-Signed Certificates for `https`
+## Using SSL
 
 Assuming you have a generated your certificate and private key file, you can pass these to `jupyter lab` with the following:
 
