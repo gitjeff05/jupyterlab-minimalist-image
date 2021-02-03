@@ -18,15 +18,15 @@ matplotlib==3.3.4
 
 First build the container from this directory, lets name it `MITx6.86:v1` or anything you want:
 
-```
-DOCKER_BUILDKIT=1 docker build -t MITx6.86:v1 .
+```bash
+> DOCKER_BUILDKIT=1 docker build -t MITx6.86:v1 .
 ```
 
 ## Run the container
 
-```
-docker run --rm -it -p 8888:8888 \
-  -w /home/jordan/work
+```bash
+> docker run --rm -it -p 8888:8888 \
+  -w /home/jordan/work \
   --mount type=bind,src=/path/to/class,dst=/home/jordan/work \
   MITx6.86:v1
 ```

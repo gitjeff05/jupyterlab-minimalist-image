@@ -79,6 +79,7 @@ Suppose you want to work from some directory `/Users/alex/ml-projects`. To run w
 
 ```bash
 > docker run --rm -it -p 8888:8888 \
+  -w /home/jordan/work \
   -v /Users/alex/ml-projects:/home/jordan/work \
   jupyterlab-minimalist:v1
 ```
@@ -93,6 +94,7 @@ Assuming you have a generated your certificate and private key file, you can pas
 
 ```bash
 > docker run --rm -it -p 8888:8888 \
+  -w /home/jordan/work \
   -v /Users/alex/ml-projects:/home/jordan/work \
   -v /Users/alex/certs:/home/jordan/certs \
   jupyterlab-minimalist:v1 \
