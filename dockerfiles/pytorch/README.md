@@ -31,6 +31,28 @@ docker run --rm -it -p 8888:8888 \
   MITx6.86:v1
 ```
 
-## Important Note:
+# Important Note:
 
-Containers are supposed to be ephemeral and as such I use the `--rm` flag to cleanup and remove the container entirely after it exits. This is no big deal if you have mounted your directory properly. Your work will persist on your host machine in the directory specified by `src` above. Using `--rm` is a personal preference and users should be familiar with how bind mounts work and understand that **any work saved outside of** `/home/jordan/work` **will not persist** when using the `--rm` flag.
+Containers are supposed to be ephemeral and as such, the `--rm` flag removes the container after it exits. This is no big deal if you have mounted your directory properly. Your work will persist on your host machine in the directory specified by `src` above. Using `--rm` is a personal preference and users should be familiar with how bind mounts work and understand that **any work saved outside of** `/home/jordan/work` on the container **will not persist** when using the `--rm` flag.
+
+# Regarding use of Python 3.9
+
+The class specifies using **Python 3.6**. If this ends up being an issue, simply set the base image at the top of the dockerfile:
+
+```
+FROM python:3.6-slim-buster AS base
+```
+
+Then, you will have to backtrack a few dependencies in `requirements.txt`:
+
+```
+numpy==1.19.5
+pandas==1.1.5
+scipy==1.5.4
+```
+
+Rebuild the image and you should be good to go.
+
+# Issues
+
+[File an issue](https://github.com/gitjeff05/jupyterlab-minimalist-image/issues) if something is not working well for you.
