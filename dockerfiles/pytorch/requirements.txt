@@ -1,0 +1,12 @@
+numpy==1.20.0
+pandas==1.2.1
+scipy==1.6.0
+matplotlib==3.3.4
+seaborn==0.11.1
+bokeh==2.2.3
+jupyterlab==3.0.7
+scikit-learn==0.24.1
+torch==1.7.1
+torchaudio==0.7.2
+torchvision==0.8.2
+tqdm==4.56.0
