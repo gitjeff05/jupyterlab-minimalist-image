@@ -4,15 +4,14 @@ A [lightweight](https://github.com/gitjeff05/jupyterlab-minimalist-image#the-res
 
 ## The Goals of this Project:
 
-A minimalist image, built from a small Dockerfile (~20 lines) that is easy to extend. Specifically, this project should always aim to:
+A minimalist image, built from a small Dockerfile (~30 lines) that is easy to extend. Specifically, this project should always aim to:
 
-1. Use a Dockerfile that is simple and intuitive
+1. Use a small Dockerfile that is simple and intuitive
 2. Produce an image that is small as possible by:
     - using [multi-stage builds](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#use-multi-stage-builds)
     - minimizing RUN, COPY, ADD commands
     - minimizing dependencies
-3. Be easy to extend with additional packages based on user preferences
-4. Follow best practices and [start with an appropriate base image](https://docs.docker.com/develop/dev-best-practices/#how-to-keep-your-images-small) (i.e., [Official Python Docker](https://hub.docker.com/_/python))
+3. Follow best practices and [start with an appropriate base image](https://docs.docker.com/develop/dev-best-practices/#how-to-keep-your-images-small) (i.e., [Official Python Docker](https://hub.docker.com/_/python)) 
 
 Disclaimer: **This is experimental.**  It is safe enough to use locally, but not yet meant for production until others have had a chance to review.
 
@@ -28,21 +27,21 @@ The solutions discussed and implemented here will focus on containerization as o
 
 For a more in-depth rundown of containers, consider reading some good introductions by [NetApp](https://www.netapp.com/us/info/what-are-containers.aspx) and [Google](https://cloud.google.com/containers) and [Docker](https://www.docker.com/resources/what-container).
 
-## Existing Solutions
+# Existing Solutions
 
-Currently, [Jupyter Docker Stacks](https://jupyter-docker-stacks.readthedocs.io/en/latest/) leverage the power of containerization to provide an array of Docker images for data science applications. The author of this project has the upmost respect for jupyter docker stacks.
+Currently, [Jupyter Docker Stacks](https://jupyter-docker-stacks.readthedocs.io/en/latest/) leverage the power of containerization to provide an array of Docker images for data science applications.
 
-However, the resulting images from Jupyter Docker Stacks can be quite large and there are cases where a slimmer image is desired. Additionally, some potential downsides to Jupyter Docker Stacks include:
+However, the resulting images from Jupyter Docker Stacks are quite large and some other downsides include:
   
   - The Dockerfiles and startup scripts are long and somewhat difficult to follow
   - The images arguably violate the [best practice of decoupling](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#decouple-applications) (e.g., by including packages like inkscape, emacs, vim, git)
-  - The base image chain is complex (i.e., to extend `jupyter/scipy-notebook`, one must have working knowledge of:
+  - The base image chain is complex (e.g., to extend `jupyter/scipy-notebook`, one must have working knowledge of:
     - `ubuntu:focal` 
       - `jupyter/base-notebook`
         - `jupyter/minimal-notebook`
           - `jupyter/scipy-notebook`
 
-If you require Conda or JupyterHub, then Jupyter Docker Stacks is a good option for you. They also support R, Spark, TensorFlow, Julia and other kernels that this project does not. There are definitely cases where Jupyter Docker Stacks is a great option and I have many times used them myself.
+If you require Conda or JupyterHub, then Jupyter Docker Stacks is a good option for you. They also support R, Spark, TensorFlow, Julia and other kernels that this project does not (yet). However, I have used this same setup to [create a Pytorch image](https://github.com/gitjeff05/jupyterlab-minimalist-image/tree/master/dockerfiles/pytorch) with success. It would certianly be possible to do others.
 
 ## The Approach
 
@@ -50,12 +49,12 @@ We desired a solution based off the [Official Python Docker image](https://hub.d
 
 ## The Result
 
-The resulting image is built from a ~20 line Dockerfile and results in a 663MB image. A comparison with jupyter/scipy-notebook is shown below.
+The resulting image is built from a ~30 line Dockerfile and results in a 864MB image. A comparison with jupyter/scipy-notebook is shown below.
 
-| Image  | # Layers | # lines in Dockerfile | Size (GB) | 
+| Image  | # Layers | # lines in Dockerfile | Size | 
 |---|---|---|---|
-| `jupyterlab-minimalist`  | 10  | 22 | 0.663 |
-| `jupyter/scipy-notebook`  | 21  | 190 | 2.67 |
+| `jupyterlab-minimalist`  | 10  | 29 | 864 MB |
+| `jupyter/scipy-notebook`  | 21  | 190 | 2.67 GB |
 
 ---
 
