@@ -31,7 +31,7 @@ USER root
 # In order to install JupyterLab extensions, we need to have Node.js installed.
 RUN apt-get update; \
     apt-get install -y --no-install-recommends wget; \
-    wget -qO- https://deb.nodesource.com/setup_12.x | bash -; \
+    wget -qO- https://deb.nodesource.com/setup_lts.x | bash -; \
     apt-get install -y nodejs
 
 USER ${NB_USER}
