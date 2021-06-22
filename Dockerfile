@@ -29,10 +29,10 @@ FROM base as appdeps
 USER root
 
 # In order to install JupyterLab extensions, we need to have Node.js installed.
-RUN apt-get update; \
-    apt-get install -y --no-install-recommends wget; \
-    wget -qO- https://deb.nodesource.com/setup_lts.x | bash -; \
-    apt-get install -y nodejs
+RUN apt-get update && apt-get install -y --no-install-recommends wget && \ 
+    wget -qO- https://deb.nodesource.com/setup_lts.x | bash - && \
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/*
 
 USER ${NB_USER}
 

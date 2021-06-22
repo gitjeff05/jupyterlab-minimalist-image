@@ -1,19 +1,32 @@
 # Minimalist JupyterLab Docker Image
 
-A [lightweight](https://github.com/gitjeff05/jupyterlab-minimalist-image#the-result) Docker image for Python, [JupterLab](https://jupyterlab.readthedocs.io), [Numpy](https://numpy.org/), [Pandas](https://pandas.pydata.org/), [Matplotlib](https://matplotlib.org/) and [scikit-learn](https://scikit-learn.org/stable/).
+A [lightweight](https://github.com/gitjeff05/jupyterlab-minimalist-image#results) Docker image for Python, [JupterLab](https://jupyterlab.readthedocs.io), [Numpy](https://numpy.org/), [Pandas](https://pandas.pydata.org/), [Matplotlib](https://matplotlib.org/) and [scikit-learn](https://scikit-learn.org/stable/).
 
-## The Goals of this Project:
+## To pull the image Docker Hub:
+```bash
+> docker pull jusher/jupyterlab-minimalist:latest
+```
 
-A minimalist image, built from a small Dockerfile (~30 lines) that is easy to extend. Specifically, this project should always aim to:
+## To start the container 
+```bash
+> docker run -it -p 8888:8888 \
+  -w /home/jordan/work \
+  --mount type=bind,src="$(pwd)"/project,dst=/home/jordan/work \
+  jusher/jupyterlab-minimalist:latest
+```
 
-1. Use a small Dockerfile that is simple and intuitive
-2. Produce an image that is small as possible by:
+# The Goals of this Project:
+
+A minimalist image, built from a small Dockerfile (~30 lines) that is easy to understand. This project should always aim to follow [Docker best practices](https://docs.docker.com/develop/dev-best-practices/) and in particular:
+
+1. Use an intuitive Dockerfile that is easy to extend
+2. Produce an image that is small as possible :
     - using [multi-stage builds](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#use-multi-stage-builds)
     - minimizing RUN, COPY, ADD commands
     - minimizing dependencies
-3. Follow best practices and [start with an appropriate base image](https://docs.docker.com/develop/dev-best-practices/#how-to-keep-your-images-small) (i.e., [Official Python Docker](https://hub.docker.com/_/python)) 
+3. Start with an appropriate base image (i.e., [Official Python Docker](https://hub.docker.com/_/python)) 
 
-Disclaimer: **This is experimental.**  It is safe enough to use locally, but not yet meant for production until others have had a chance to review.
+Disclaimer: **This is experimental.**  You should review the Dockerfile and test the image carefully before putting this in production. Feedback is welcome.
 
 ## The Problem
 
@@ -35,7 +48,7 @@ However, the resulting images from Jupyter Docker Stacks are quite large and som
   
   - The Dockerfiles and startup scripts are long and somewhat difficult to follow
   - The images arguably violate the [best practice of decoupling](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#decouple-applications) (e.g., by including packages like inkscape, emacs, vim, git)
-  - The base image chain is complex (e.g., to extend `jupyter/scipy-notebook`, one must have working knowledge of:
+  - The base image chain is complex (e.g., to extend `jupyter/scipy-notebook`, one must have understand the base image hierarchy and their scripts:
     - `ubuntu:focal` 
       - `jupyter/base-notebook`
         - `jupyter/minimal-notebook`
@@ -43,22 +56,24 @@ However, the resulting images from Jupyter Docker Stacks are quite large and som
 
 If you require Conda or JupyterHub, then Jupyter Docker Stacks is a good option for you. They also support R, Spark, TensorFlow, Julia and other kernels that this project does not (yet). However, I have used this same setup to [create a Pytorch image](https://github.com/gitjeff05/jupyterlab-minimalist-image/tree/master/dockerfiles/pytorch) with success. It would certianly be possible to do others.
 
-## The Approach
+## Approach
 
 We desired a solution based off the [Official Python Docker image](https://hub.docker.com/_/python). Why does this matter? [Starting with an appropriate base image](https://docs.docker.com/develop/dev-best-practices/#how-to-keep-your-images-small) is a best practice and helps reduce the complexity and size of the image. We also employ [multi-stage builds](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#use-multi-stage-builds) which reduces the build time and provides efficiencies for extending the image.
 
-## The Result
+## Results
 
 The resulting image is built from a ~30 line Dockerfile and results in a 864MB image. A comparison with jupyter/scipy-notebook is shown below.
 
 | Image  | # Layers | # lines in Dockerfile | Size | 
 |---|---|---|---|
-| `jupyterlab-minimalist`  | 10  | 29 | 864 MB |
+| `jupyterlab-minimalist`  | 10  | 29 | 873 MB |
 | `jupyter/scipy-notebook`  | 21  | 190 | 2.67 GB |
 
 ---
 
-**Note**: This is not *exactly* a fair comparison because the scipy image from Jupyter Docker Stacks includes so much more (e.g., Conda, JupyterHub, Git, Emacs and more). Also the "# lines in Dockerfile" was calculated using all the dockerfiles in the chain with spaces and comments removed.
+Number of lines in Dockerfile was calculated using all the dockerfiles in the chain with spaces and comments removed.
+
+**Note**: This is not *exactly* a fair comparison because the scipy image from Jupyter Docker Stacks includes so much more (e.g., Conda, JupyterHub, Git, Emacs and more).
 
 # How to Build and Run this Container:
 
@@ -74,12 +89,12 @@ Note: Setting `DOCKER_BUILDKIT` enables [BuildKit](https://docs.docker.com/devel
 
 ## Run
 
-Suppose you want to work from some directory `/Users/alex/ml-projects`. To run with that directory mounted to the container, run:
+Suppose you want to work from some directory `/Users/alex/project`. To run with that directory mounted to the container, run:
 
 ```bash
 > docker run --rm -it -p 8888:8888 \
   -w /home/jordan/work \
-  -v /Users/alex/ml-projects:/home/jordan/work \
+  --mount type=bind,source=/Users/alex/project,target=/home/jordan/work \
   jupyterlab-minimalist:v1
 ```
 
