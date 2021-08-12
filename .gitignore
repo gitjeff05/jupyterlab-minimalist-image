@@ -4,3 +4,4 @@ cert/localhost.*
 
 # vscode settings
 .vscode/
+.ipynb_checkpoints/

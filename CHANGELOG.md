@@ -1,3 +1,7 @@
+2021-08-12T13:35:58Z
+
+Update requirements.txt file for v3
+
 numpy==1.21.1
 pandas==1.3.1
 scipy==1.7.1
