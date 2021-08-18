@@ -18,8 +18,7 @@ FROM groups-users AS install-deps
 LABEL pip.astropy="4.3.1" \
       pip.matplotlib="3.4.3" \
       pip.numpy="1.21.1" \
-      pip.scikit-learn="0.24.2" \
-      pip.jupyterlab="3.1.4"
+      pip.scikit-learn="0.24.2"
 
 COPY --chown=joe:developers requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
