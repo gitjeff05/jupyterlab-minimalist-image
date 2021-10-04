@@ -1,5 +1,8 @@
 astropy==4.3.1
+astroplan==0.8
 matplotlib==3.4.3
 numpy==1.21.1
 scikit-learn==0.24.2
 jupyterlab==3.1.4
+ipywidgets==7.6.5
+jupyterlab-widgets==1.0.2

@@ -11,9 +11,18 @@ ENV PATH=/home/joe/.local/bin:$PATH
 
 WORKDIR /home/joe
 
-USER joe
+FROM groups-users AS apt-update
 
-FROM groups-users AS install-deps
+USER root
+
+RUN apt-get update && apt-get install -y --no-install-recommends wget && \ 
+    wget -qO- https://deb.nodesource.com/setup_lts.x | bash - && \
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/*
+
+FROM apt-update AS install-deps
+
+USER joe
 
 LABEL pip.astropy="4.3.1" \
       pip.matplotlib="3.4.3" \
@@ -22,8 +31,9 @@ LABEL pip.astropy="4.3.1" \
       pip.jupyterlab="3.1.4"
 
 COPY --chown=joe:developers requirements.jupyter.txt ./requirements.txt
+
 RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8888
 ENTRYPOINT [ "jupyter", "lab" ]
-CMD ["--port=8888", "--no-browser", "--ip=0.0.0.0"]
+CMD ["--port=8888", "--ip=0.0.0.0"]
