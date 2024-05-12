@@ -1,5 +1,5 @@
-FROM python:3.9-slim-buster AS base
-
+FROM python:3.12-bullseye AS base
+# https://github.com/docker-library/python/blob/bf5951cfa2b2f6c3dabf428549c9dca658ecee81/3.12/slim-bookworm/Dockerfile
 ARG REQ=requirements.txt
 
 ARG NB_USER="jordan"
@@ -29,7 +29,7 @@ FROM base as appdeps
 USER root
 
 # In order to install JupyterLab extensions, we need to have Node.js installed.
-RUN apt-get update && apt-get install -y --no-install-recommends wget && \ 
+RUN apt-get update && apt-get install -y --no-install-recommends wget && \
     wget -qO- https://deb.nodesource.com/setup_lts.x | bash - && \
     apt-get install -y nodejs && \
     rm -rf /var/lib/apt/lists/*
