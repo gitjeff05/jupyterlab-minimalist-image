@@ -1,26 +1,23 @@
 # syntax=docker/dockerfile:1
-FROM python:3.9-slim-buster AS pip-upgrade
+FROM python:3.13-slim-bookworm AS builder
 
-RUN python -m pip install --upgrade pip
+ARG REQ=requirements.txt
+COPY ./${REQ} ./
 
-FROM pip-upgrade AS groups-users
+RUN python -m venv /venv && \
+    /venv/bin/pip install --no-cache-dir -r ${REQ}
+
+
+FROM python:3.13-slim-bookworm
 
 RUN groupadd developers && useradd --no-user-group --no-log-init -g developers -m joe
 
-ENV PATH=/home/joe/.local/bin:$PATH
+COPY --from=builder /venv /venv
 
 WORKDIR /home/joe
 
 USER joe
 
-FROM groups-users AS install-deps
+ENV PATH="/venv/bin:$PATH"
 
-LABEL pip.astropy="4.3.1" \
-      pip.matplotlib="3.4.3" \
-      pip.numpy="1.21.1" \
-      pip.scikit-learn="0.24.2"
-
-COPY --chown=joe:developers requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-CMD [ "python" ]
+CMD ["python"]
