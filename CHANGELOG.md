@@ -8,6 +8,11 @@
 - Drop Node.js dependency — JupyterLab 4.x ships pre-built frontend assets
 - Update all requirements to Python 3.13 compatible versions
 - Update README with current measured image sizes, corrected image hierarchy, Quay.io registry references, and multi-stage build documentation
+- Update all `dockerfiles/` variants (basic, astropy, pytorch) to `python:3.13-slim-bookworm` with real multi-stage builds
+- Replace devcert (abandoned) with mkcert in `cert/`; remove Node.js scripts
+- Update `.gitignore` with standard Python, Jupyter, and macOS patterns
+- Update LICENSE copyright year to 2020-2026
+- Add `dockerfiles/jupyter-ai/` variant with chat sidebar and `%%ai` cell magic via [jupyter-ai](https://github.com/jupyterlab/jupyter-ai); API key injected at runtime
 
 ### Requirements
 - numpy 2.2.1

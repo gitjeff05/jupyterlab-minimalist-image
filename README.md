@@ -55,7 +55,7 @@ However, the resulting images from Jupyter Docker Stacks are quite large and som
           - `jupyter/minimal-notebook`
             - `jupyter/scipy-notebook`
 
-If you require Conda or JupyterHub, then Jupyter Docker Stacks is a good option for you. They also support R, Spark, TensorFlow, Julia and other kernels that this project does not (yet). However, I have used this same setup to [create a Pytorch image](https://github.com/gitjeff05/jupyterlab-minimalist-image/tree/master/dockerfiles/pytorch) with success. It would certianly be possible to do others.
+If you require Conda or JupyterHub, then Jupyter Docker Stacks is a good option for you. They also support R, Spark, TensorFlow, Julia and other kernels that this project does not (yet). However, this same approach has been used to build [PyTorch](https://github.com/gitjeff05/jupyterlab-minimalist-image/tree/main/dockerfiles/pytorch), [Astropy](https://github.com/gitjeff05/jupyterlab-minimalist-image/tree/main/dockerfiles/astropy), and [AI-enabled](https://github.com/gitjeff05/jupyterlab-minimalist-image/tree/main/dockerfiles/jupyter-ai) variants.
 
 ## Approach
 
@@ -94,23 +94,23 @@ Number of lines in Dockerfile was calculated using all the dockerfiles in the ch
 
 ## Build
 
-Currently, this image is not published to a registry. As a result, you *cannot* use `docker pull` yet. To build the image just run the following from the root directory of this project:
+To build the image from the root directory of this project:
 
 ```bash
-> export DOCKER_BUILDKIT=1
-> docker build -t jupyterlab-minimalist:v1 .
+docker build -t jupyterlab-minimalist:latest .
 ```
-Note: Setting `DOCKER_BUILDKIT` enables [BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/). Although not required, it is recommended because it improves performance, storage and security. 
+
+BuildKit is enabled by default in Docker 23+, so no additional flags are needed.
 
 ## Run
 
 Suppose you want to work from some directory `/Users/alex/project`. To run with that directory mounted to the container, run:
 
 ```bash
-> docker run --rm -it -p 8888:8888 \
+docker run --rm -it -p 8888:8888 \
   -w /home/jordan/work \
   --mount type=bind,source=/Users/alex/project,target=/home/jordan/work \
-  jupyterlab-minimalist:v1
+  jupyterlab-minimalist:latest
 ```
 
 ## Include Additional Packages
@@ -119,24 +119,31 @@ Want to use ggplot or plotly? Simply modify the `requirements.txt` file and repe
 
 ## Using SSL
 
-Assuming you have a generated your certificate and private key file, you can pass these to `jupyter lab` with the following:
+Generate certificates using [mkcert](https://github.com/FiloSottile/mkcert) — see the [cert folder README](https://github.com/gitjeff05/jupyterlab-minimalist-image/blob/main/cert/README.md) for setup instructions. Once you have `localhost.pem` and `localhost-key.pem`, pass them to the container:
 
 ```bash
-> docker run --rm -it -p 8888:8888 \
+docker run --rm -it -p 8888:8888 \
   -w /home/jordan/work \
-  -v /Users/alex/ml-projects:/home/jordan/work \
+  -v /Users/alex/project:/home/jordan/work \
   -v /Users/alex/certs:/home/jordan/certs \
-  jupyterlab-minimalist:v1 \
+  jupyterlab-minimalist:latest \
   --ip=0.0.0.0 --port=8888 \
-  --certfile=/home/jordan/certs/localhost.cert \
-  --keyfile=/home/jordan/certs/localhost.key
+  --certfile=/home/jordan/certs/localhost.pem \
+  --keyfile=/home/jordan/certs/localhost-key.pem
 ```
 
-Note that you have to resend the `ip` and `port` because we are overriding the `CMD` statement with certificate info. There may be a better way to do this but for right now this is the way.
+Note: `ip` and `port` must be repeated here because they override the default `CMD`.
 
-Note, you may have to use `localhost` instead of the `127.0.0.1` if the domain on your generated certificate used `localhost` as the domain (devcert does not support creating certificate authorities with `127.0.0.1`).
+## Variants
 
-See the [readme in the cert folder](https://github.com/gitjeff05/jupyterlab-minimalist-image/blob/master/cert/app.mjs) for more info on generating self-signed certificates for local development.
+The `dockerfiles/` directory contains purpose-built variants that follow the same pattern:
+
+| Variant | Description |
+|---|---|
+| [`basic/`](dockerfiles/basic/) | Python + numpy + matplotlib only. No JupyterLab. |
+| [`astropy/`](dockerfiles/astropy/) | Astronomy stack (astropy, astroplan). Plain Python or JupyterLab via `Dockerfile.jupyter`. |
+| [`pytorch/`](dockerfiles/pytorch/) | Full scientific stack + PyTorch 2.x (CPU). Swap the index URL in `requirements.txt` for GPU builds. |
+| [`jupyter-ai/`](dockerfiles/jupyter-ai/) | Full scientific stack + [jupyter-ai](https://github.com/jupyterlab/jupyter-ai) chat sidebar and `%%ai` cell magic. API key injected at runtime via env var. |
 
 ## Feedback
 
