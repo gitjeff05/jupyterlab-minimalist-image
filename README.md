@@ -2,7 +2,7 @@
 
 A [lightweight](https://github.com/gitjeff05/jupyterlab-minimalist-image#results) Docker image for Python, [JupterLab](https://jupyterlab.readthedocs.io), [Numpy](https://numpy.org/), [Pandas](https://pandas.pydata.org/), [Matplotlib](https://matplotlib.org/) and [scikit-learn](https://scikit-learn.org/stable/).
 
-## To pull the image Docker Hub:
+## To pull the image from Docker Hub:
 ```bash
 > docker pull jusher/jupyterlab-minimalist:latest
 ```
@@ -42,32 +42,47 @@ For a more in-depth rundown of containers, consider reading some good introducti
 
 # Existing Solutions
 
-Currently, [Jupyter Docker Stacks](https://jupyter-docker-stacks.readthedocs.io/en/latest/) leverage the power of containerization to provide an array of Docker images for data science applications.
+Currently, [Jupyter Docker Stacks](https://jupyter-docker-stacks.readthedocs.io/en/latest/) leverage the power of containerization to provide an array of Docker images for data science applications. Note: as of October 2023, these images are published to [Quay.io](https://quay.io/organization/jupyter) — the Docker Hub versions are frozen and no longer updated.
 
 However, the resulting images from Jupyter Docker Stacks are quite large and some other downsides include:
-  
+
   - The Dockerfiles and startup scripts are long and somewhat difficult to follow
-  - The images arguably violate the [best practice of decoupling](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#decouple-applications) (e.g., by including packages like inkscape, emacs, vim, git)
-  - The base image chain is complex (e.g., to extend `jupyter/scipy-notebook`, one must have understand the base image hierarchy and their scripts:
-    - `ubuntu:focal` 
-      - `jupyter/base-notebook`
-        - `jupyter/minimal-notebook`
-          - `jupyter/scipy-notebook`
+  - The images arguably violate the [best practice of decoupling](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#decouple-applications) (e.g., by including packages like TeX Live, git, vim)
+  - The base image chain is complex (e.g., to extend `jupyter/scipy-notebook`, one must understand the base image hierarchy and their scripts:
+    - `ubuntu:noble`
+      - `docker-stacks-foundation`
+        - `jupyter/base-notebook`
+          - `jupyter/minimal-notebook`
+            - `jupyter/scipy-notebook`
 
 If you require Conda or JupyterHub, then Jupyter Docker Stacks is a good option for you. They also support R, Spark, TensorFlow, Julia and other kernels that this project does not (yet). However, I have used this same setup to [create a Pytorch image](https://github.com/gitjeff05/jupyterlab-minimalist-image/tree/master/dockerfiles/pytorch) with success. It would certianly be possible to do others.
 
 ## Approach
 
-We desired a solution based off the [Official Python Docker image](https://hub.docker.com/_/python). Why does this matter? [Starting with an appropriate base image](https://docs.docker.com/develop/dev-best-practices/#how-to-keep-your-images-small) is a best practice and helps reduce the complexity and size of the image. We also employ [multi-stage builds](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#use-multi-stage-builds) which reduces the build time and provides efficiencies for extending the image.
+We desired a solution based off the [Official Python Docker image](https://hub.docker.com/_/python). Why does this matter? [Starting with an appropriate base image](https://docs.docker.com/develop/dev-best-practices/#how-to-keep-your-images-small) is a best practice and helps reduce the complexity and size of the image. We also employ [multi-stage builds](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#use-multi-stage-builds) to produce a lean final image.
+
+### Multi-stage build
+
+The Dockerfile uses two stages:
+
+1. **`builder`** — installs all Python packages from `requirements.txt` into an isolated virtual environment at `/venv`. This stage handles pip's temporary files, wheel downloads, and any build-time overhead.
+2. **final** — starts from a fresh `python:3.13-slim-bookworm` base and copies only `/venv` from the builder using `COPY --from=builder`. No pip cache, no build artifacts, and no intermediate layers carry forward.
+
+```
+builder  →  installs packages into /venv
+final    →  clean base + COPY --from=builder /venv /venv
+```
+
+This is what keeps the final image at 7 layers. The venv is self-contained — the `PATH` is updated to point into it, so `jupyter`, `python`, and all installed packages are available without any system-level installation.
 
 ## Results
 
-The resulting image is built from a ~30 line Dockerfile and results in a 864MB image. A comparison with jupyter/scipy-notebook is shown below.
+The resulting image is built from a ~28 line Dockerfile using a real multi-stage build. A comparison with `quay.io/jupyter/scipy-notebook` (measured March 2026) is shown below.
 
-| Image  | # Layers | # lines in Dockerfile | Size | 
+| Image  | # Layers | # lines in Dockerfile | Size |
 |---|---|---|---|
-| `jupyterlab-minimalist`  | 10  | 29 | 873 MB |
-| `jupyter/scipy-notebook`  | 21  | 190 | 2.67 GB |
+| `jupyterlab-minimalist`  | 7  | 28 | 820 MB |
+| `quay.io/jupyter/scipy-notebook`  | 37  | 190+ | 3.36 GB |
 
 ---
 
