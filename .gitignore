@@ -1,7 +1,18 @@
-# development certificates 
-cert/node_modules/
-cert/localhost.*
+# macOS
+.DS_Store
 
-# vscode settings
-.vscode/
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+.venv/
+
+# Jupyter
 .ipynb_checkpoints/
+
+# vscode
+.vscode/
+
+# development certificates
+cert/localhost.*
