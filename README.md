@@ -1,32 +1,64 @@
 # Minimalist JupyterLab Docker Image
 
-A [lightweight](https://github.com/gitjeff05/jupyterlab-minimalist-image#results) Docker image for Python, [JupterLab](https://jupyterlab.readthedocs.io), [Numpy](https://numpy.org/), [Pandas](https://pandas.pydata.org/), [Matplotlib](https://matplotlib.org/) and [scikit-learn](https://scikit-learn.org/stable/).
+A lightweight, easy-to-extend JupyterLab image built on the [official Python Docker image](https://hub.docker.com/_/python). **4x smaller than `quay.io/jupyter/scipy-notebook`** (820 MB vs 3.36 GB) with the same core scientific stack.
 
-## To pull the image from Docker Hub:
-```bash
-> docker pull jusher/jupyterlab-minimalist:latest
-```
+- **Small** — 820 MB, 7 layers, ~28 line Dockerfile. The official `scipy-notebook` is 3.36 GB across 37 layers.
+- **Simple** — one base image, pip-only installs, no conda, no JupyterHub, no TeX Live
+- **Readable** — a single Dockerfile you can read in 30 seconds and extend in minutes
+- **Secure** — non-root user by default; no secrets baked in
+- **AI-ready** — optional [jupyter-ai variant](#variants) with chat sidebar and `%%ai` cell magic; bring your own API key
 
-## To start the container 
+## Quick start
+
 ```bash
-> docker run -it -p 8888:8888 \
+git clone https://github.com/gitjeff05/jupyterlab-minimalist-image.git
+cd jupyterlab-minimalist-image
+docker build -t jupyterlab-minimalist:latest .
+docker run --rm -it -p 8888:8888 \
   -w /home/jordan/work \
-  --mount type=bind,src="$(pwd)"/project,dst=/home/jordan/work \
-  jusher/jupyterlab-minimalist:latest
+  --mount type=bind,source=$(pwd)/project,target=/home/jordan/work \
+  jupyterlab-minimalist:latest
 ```
 
-# The Goals of this Project:
+## Variants
 
-A minimalist image, built from a small Dockerfile (~30 lines) that is easy to understand. This project should always aim to follow [Docker best practices](https://docs.docker.com/develop/dev-best-practices/) and in particular:
+| Variant | Description |
+|---|---|
+| *(root)* | Core scientific stack: numpy, pandas, scipy, matplotlib, seaborn, bokeh, scikit-learn, sympy |
+| [`basic/`](dockerfiles/basic/) | Python + numpy + matplotlib only. No JupyterLab. |
+| [`astropy/`](dockerfiles/astropy/) | Astronomy stack (astropy, astroplan). Plain Python or JupyterLab via `Dockerfile.jupyter`. |
+| [`pytorch/`](dockerfiles/pytorch/) | Full scientific stack + PyTorch 2.x (CPU). Swap the index URL in `requirements.txt` for GPU builds. |
+| [`jupyter-ai/`](dockerfiles/jupyter-ai/) | Full scientific stack + [jupyter-ai](https://github.com/jupyterlab/jupyter-ai) chat sidebar and `%%ai` cell magic. API key injected at runtime via env var. |
+
+### AI variant
+
+The `jupyter-ai` variant adds a chat sidebar (Jupyternaut) and `%%ai` cell magic powered by your choice of LLM. No key is baked into the image — pass it at runtime:
+
+```bash
+docker build -t jupyterlab-minimalist-ai:latest dockerfiles/jupyter-ai/
+docker run --rm -it -p 8888:8888 \
+  -e ANTHROPIC_API_KEY=sk-ant-... \
+  -w /home/jordan/work \
+  --mount type=bind,source=$(pwd)/project,target=/home/jordan/work \
+  jupyterlab-minimalist-ai:latest
+```
+
+See [`dockerfiles/jupyter-ai/README.md`](dockerfiles/jupyter-ai/README.md) for full usage, OpenAI support, and `%%ai` magic examples.
+
+---
+
+# Goals
+
+A minimalist image built from a small Dockerfile that is easy to understand. This project follows [Docker best practices](https://docs.docker.com/develop/dev-best-practices/) and in particular:
 
 1. Use an intuitive Dockerfile that is easy to extend
-2. Produce an image that is small as possible :
+2. Produce an image as small as possible:
     - using [multi-stage builds](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#use-multi-stage-builds)
     - minimizing RUN, COPY, ADD commands
     - minimizing dependencies
-3. Start with an appropriate base image (i.e., [Official Python Docker](https://hub.docker.com/_/python)) 
+3. Start with an appropriate base image (i.e., [Official Python Docker](https://hub.docker.com/_/python))
 
-Disclaimer: **This is experimental.**  You should review the Dockerfile and test the image carefully before putting this in production. Feedback is welcome.
+Disclaimer: **This is experimental.** You should review the Dockerfile and test the image carefully before putting this in production. Feedback is welcome.
 
 ## The Problem
 
@@ -36,7 +68,7 @@ Setting up a local environment for data science is cumbersome. Between environme
 
 A good way to create consistent, portable and isolated environments is containerization. Containers can be preconfigured with packages and software installed. They are efficient and can be shared easily.
 
-The solutions discussed and implemented here will focus on containerization as opposed to environment managers like [Anaconda](https://www.anaconda.com/) or [Virtualenv](https://virtualenv.pypa.io/en/latest/#).
+The solutions discussed here focus on containerization as opposed to environment managers like [Anaconda](https://www.anaconda.com/) or [Virtualenv](https://virtualenv.pypa.io/en/latest/#).
 
 For a more in-depth rundown of containers, consider reading some good introductions by [NetApp](https://www.netapp.com/us/info/what-are-containers.aspx) and [Google](https://cloud.google.com/containers) and [Docker](https://www.docker.com/resources/what-container).
 
@@ -48,7 +80,7 @@ However, the resulting images from Jupyter Docker Stacks are quite large and som
 
   - The Dockerfiles and startup scripts are long and somewhat difficult to follow
   - The images arguably violate the [best practice of decoupling](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#decouple-applications) (e.g., by including packages like TeX Live, git, vim)
-  - The base image chain is complex (e.g., to extend `jupyter/scipy-notebook`, one must understand the base image hierarchy and their scripts:
+  - The base image chain is complex (e.g., to extend `jupyter/scipy-notebook`, one must understand the full hierarchy:
     - `ubuntu:noble`
       - `docker-stacks-foundation`
         - `jupyter/base-notebook`
@@ -88,13 +120,11 @@ The resulting image is built from a ~28 line Dockerfile using a real multi-stage
 
 Number of lines in Dockerfile was calculated using all the dockerfiles in the chain with spaces and comments removed.
 
-**Note**: This is not *exactly* a fair comparison because the scipy image from Jupyter Docker Stacks includes so much more (e.g., Conda, JupyterHub, Git, Emacs and more).
+**Note**: This is not *exactly* a fair comparison because the scipy image from Jupyter Docker Stacks includes so much more (e.g., Conda, JupyterHub, Git, and more).
 
-# How to Build and Run this Container:
+# How to Build and Run this Container
 
 ## Build
-
-To build the image from the root directory of this project:
 
 ```bash
 docker build -t jupyterlab-minimalist:latest .
@@ -103,8 +133,6 @@ docker build -t jupyterlab-minimalist:latest .
 BuildKit is enabled by default in Docker 23+, so no additional flags are needed.
 
 ## Run
-
-Suppose you want to work from some directory `/Users/alex/project`. To run with that directory mounted to the container, run:
 
 ```bash
 docker run --rm -it -p 8888:8888 \
@@ -115,7 +143,7 @@ docker run --rm -it -p 8888:8888 \
 
 ## Include Additional Packages
 
-Want to use ggplot or plotly? Simply modify the `requirements.txt` file and repeat the step in build.
+Want to use ggplot or plotly? Simply modify the `requirements.txt` file and rebuild.
 
 ## Using SSL
 
@@ -134,18 +162,6 @@ docker run --rm -it -p 8888:8888 \
 
 Note: `ip` and `port` must be repeated here because they override the default `CMD`.
 
-## Variants
-
-The `dockerfiles/` directory contains purpose-built variants that follow the same pattern:
-
-| Variant | Description |
-|---|---|
-| [`basic/`](dockerfiles/basic/) | Python + numpy + matplotlib only. No JupyterLab. |
-| [`astropy/`](dockerfiles/astropy/) | Astronomy stack (astropy, astroplan). Plain Python or JupyterLab via `Dockerfile.jupyter`. |
-| [`pytorch/`](dockerfiles/pytorch/) | Full scientific stack + PyTorch 2.x (CPU). Swap the index URL in `requirements.txt` for GPU builds. |
-| [`jupyter-ai/`](dockerfiles/jupyter-ai/) | Full scientific stack + [jupyter-ai](https://github.com/jupyterlab/jupyter-ai) chat sidebar and `%%ai` cell magic. API key injected at runtime via env var. |
-
 ## Feedback
 
 Any feedback is most welcome. Please feel free to [open an issue](https://github.com/gitjeff05/jupyterlab-minimalist-image/issues) or pull request if you would like to see any additional functionality or additional kernels added.
-
